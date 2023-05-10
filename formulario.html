@@ -7,7 +7,18 @@
  <form>
   <label for="numero_ordem">Número da Ordem de Serviço:</label>
   <input type="text" id="numero_ordem" name="numero_ordem"><br><br>
-  <input type="submit" value="Enviar">
+  <input type="submit" value="Enviar">Enviar</button>
+  <button type="button" onclick="enviarMensagem()">Enviar</button>
+  <script>
+        function enviarMensagem() {
+          setTimeout(function() {
+            alert('Finalizado!');
+          }, 30000);
+        }
+      </script>
  </form> 
 </body>
 </html>
+
+
+   
