@@ -6,7 +6,7 @@
     <script>
       function enviarMensagem() {
         setTimeout(function() {
-          var alarme = new Tone.Player("caminho_do_seu_arquivo_de_audio");
+          var alarme = new Tone.Player("https://tonejs.github.io/audio/berklee/Analogsynth_octaves_highmid.mp3");
           alarme.toDestination();
           alarme.start();
           alert('Finalizado!');
@@ -17,7 +17,7 @@
   <body>
     <h1>Integracao JavaScript em HTML</h1>
     <form>
-      <label for="input-x">Digite o valor de x:</label>
+      <label for="input-x">Ordem de Serviço:</label>
       <input type="text" id="input-x" name="x">
       <button type="button" onclick="enviarMensagem()">Enviar</button>
     </form>
