@@ -2,13 +2,17 @@
 <html>
   <head>
     <title>Exemplo de Integracao JavaScript em HTML</title>
-      <script>
-        function enviarMensagem() {
-          setTimeout(function() {
-            alert('Finalizado!');
-          }, 30000);
-        }
-      </script>
+    <script src="https://cdn.jsdelivr.net/npm/@tonejs/tone@14.7.77/build/Tone.js"></script>
+    <script>
+      function enviarMensagem() {
+        setTimeout(function() {
+          var alarme = new Tone.Player("caminho_do_seu_arquivo_de_audio");
+          alarme.toDestination();
+          alarme.start();
+          alert('Finalizado!');
+        }, 5000);
+      }
+    </script>
   </head>
   <body>
     <h1>Integracao JavaScript em HTML</h1>
