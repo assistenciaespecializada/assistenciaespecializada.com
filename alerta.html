@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Exemplo de Integracao JavaScript em HTML</title>
+      <script>
+        function enviarMensagem() {
+          setTimeout(function() {
+            alert('Finalizado!');
+          }, 30000);
+        }
+      </script>
+  </head>
+  <body>
+    <h1>Integracao JavaScript em HTML</h1>
+    <form>
+      <label for="input-x">Digite o valor de x:</label>
+      <input type="text" id="input-x" name="x">
+      <button type="button" onclick="enviarMensagem()">Enviar</button>
+    </form>
+  </body>
+</html>
