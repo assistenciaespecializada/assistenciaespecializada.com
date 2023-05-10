@@ -7,6 +7,7 @@
       function enviarMensagem() {
         setTimeout(function() {
           var alarme = new Tone.Player("https://tonejs.github.io/audio/berklee/Analogsynth_octaves_highmid.mp3");
+          
           alarme.toDestination();
           alarme.start();
           alert('Finalizado!');
