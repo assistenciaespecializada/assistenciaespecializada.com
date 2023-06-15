@@ -1,24 +1,82 @@
 <!DOCTYPE html>
 <html>
 <head>
- <title>Formulário de Ordem de Serviço</title>
+<style>
+  input[type=number] {
+    width: 100px;
+  }
+  #timer {
+    font-size: 20px;
+    color: green;
+  }
+</style>
+<script>
+  // Função para formatar o tempo em minutos e segundos
+  function formatTime(seconds) {
+    let minutes = Math.floor(seconds / 60);
+    let seconds = seconds % 60;
+    if (minutes < 10) minutes = "0" + minutes;
+    if (seconds < 10) seconds = "0" + seconds;
+    return minutes + ":" + seconds;
+  }
+
+  // Função para calcular o valor a ser cobrado por minuto
+  function calculateValue(minutes) {
+    let rate = 2.30; // Taxa em reais por minuto
+    return (minutes * rate).toFixed(2);
+  }
+
+  // Função para iniciar o contador de tempo
+  function startTimer() {
+    // Pegar o número da ordem de serviço do input
+    let orderNumber = document.getElementById("order-number").value;
+    // Verificar se o input não está vazio e se é um número válido
+    if (orderNumber && !isNaN(orderNumber)) {
+      // Desabilitar o input e o botão de iniciar
+      document.getElementById("order-number").disabled = true;
+      document.getElementById("start-button").disabled = true;
+      // Mostrar o número da ordem de serviço na tela
+      document.getElementById("order-display").innerHTML = "Ordem de serviço: " + orderNumber;
+      // Definir o tempo inicial em segundos (1 hora = 3600 segundos)
+      let time = 3600;
+      // Mostrar o tempo inicial na tela
+      document.getElementById("timer").innerHTML = formatTime(time);
+      // Criar um intervalo que executa a cada segundo
+      let interval = setInterval(function() {
+        // Decrementar o tempo em um segundo
+        time--;
+        // Mostrar o tempo atualizado na tela
+        document.getElementById("timer").innerHTML = formatTime(time);
+        // Verificar se o tempo acabou
+        if (time == 0) {
+          // Parar o intervalo
+          clearInterval(interval);
+          // Mostrar uma mensagem de fim de tempo na tela
+          document.getElementById("timer").innerHTML = "Fim do tempo!";
+          // Calcular o valor a ser cobrado pela ordem de serviço
+          let value = calculateValue(60); // 60 minutos
+          // Mostrar o valor na tela
+          document.getElementById("value-display").innerHTML = "Valor a ser cobrado: R$ " + value;
+          // Habilitar o input e o botão de iniciar novamente
+          document.getElementById("order-number").disabled = false;
+          document.getElementById("start-button").disabled = false;
+        }
+      }, 1000); // Executar a cada 1000 milissegundos (1 segundo)
+    } else {
+      // Mostrar um alerta de erro se o input estiver vazio ou inválido
+      alert("Por favor, digite um número válido para a ordem de serviço.");
+    }
+  }
+</script>
 </head>
 <body>
- <form>
-  <label for="numero_ordem">Número da Ordem de Serviço:</label>
-  <input type="text" id="numero_ordem" name="numero_ordem"><br><br>
-  <input type="submit" value="Enviar">Enviar</button>
-  <button type="button" onclick="enviarMensagem()">Enviar</button>
-  <script>
-        function enviarMensagem() {
-          setTimeout(function() {
-            alert('Finalizado!');
-          }, 30000);
-        }
-      </script>
- </form> 
+<h1>Sistema de ordens de serviço</h1>
+<p>Insira o número da ordem de serviço e clique em iniciar.</p>
+<input type="number" id="order-number" />
+<button id="start-button" onclick="startTimer()">Iniciar</button>
+<p id="order-display"></p>
+<p id="timer"></p>
+<p id="value-display"></p>
 </body>
 </html>
-
-
    
