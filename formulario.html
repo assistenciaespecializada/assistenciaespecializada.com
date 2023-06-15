@@ -126,14 +126,14 @@
       }, 60000); // 60000 milissegundos (1 minuto)
     } else {
       // Habilitar o botão de iniciar novamente
-      document.getElementById("start-button").disabled = false;
+      document.getElementById("start-button").disabled = true;
     }
   }
 
   // Função para verificar a senha antes de acessar a página
   function checkPassword() {
     // Pegar a senha do input
-    let password = document.getElementById("password").value;
+    let password = document.getElementById("1234").value;
     // Definir a senha correta (pode ser alterada)
     let correctPassword = "1234";
     // Comparar as senhas e mostrar ou esconder os elementos da página
