@@ -1,163 +1,91 @@
 <!DOCTYPE html>
-<html>
-<head>
-<style>
-  input[type=number], input[type=password] {
-    width: 100px;
-  }
-  #timer {
-    font-size: 20px;
-    color: green;
-  }
-  #queue {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-  }
-  #queue li {
-    margin: 5px;
-    padding: 10px;
-    border: 1px solid black;
-  }
-</style>
-<script>
-  // Função para formatar o tempo em minutos e segundos
-  function formatTime(seconds) {
-    let minutes = Math.floor(seconds / 60);
-    let seconds = seconds % 60;
-    if (minutes < 10) minutes = "0" + minutes;
-    if (seconds < 10) seconds = "0" + seconds;
-    return minutes + ":" + seconds;
-  }
+import java.util.*;
+import java.io.*;
 
-  // Função para calcular o valor a ser cobrado por minuto
-  function calculateValue(minutes) {
-    let rate = 2.30; // Taxa em reais por minuto
-    return (minutes * rate).toFixed(2);
-  }
+public class Temporizador {
 
-  // Função para iniciar o contador de tempo
-  function startTimer() {
-    // Pegar o número da ordem de serviço do input
-    let orderNumber = document.getElementById("order-number").value;
-    // Verificar se o input não está vazio e se é um número válido
-    if (orderNumber && !isNaN(orderNumber)) {
-      // Adicionar o número da ordem de serviço na fila
-      let queue = document.getElementById("queue");
-      let li = document.createElement("li");
-      li.id = "order-" + orderNumber;
-      li.innerHTML = "Ordem de serviço: " + orderNumber;
-      queue.appendChild(li);
-      // Verificar se a fila tem apenas uma ordem
-      if (queue.childElementCount == 1) {
-        // Iniciar o contador para a primeira ordem da fila
-        runTimer(orderNumber);
+  // Uma classe auxiliar que estende TimerTask para executar a ação da tarefa
+  static class Tarefa extends TimerTask {
+    // Um campo para armazenar o número da ordem de serviço
+    private int numero;
+
+    // Um construtor que recebe o número da ordem de serviço
+    public Tarefa(int numero) {
+      this.numero = numero;
+    }
+
+    // Um método para formatar o tempo em minutos e segundos
+    public String formatarTempo(long tempo) {
+      long minutos = tempo / 60000;
+      long segundos = (tempo % 60000) / 1000;
+      return String.format("%02d:%02d", minutos, segundos);
+    }
+
+    // Um método para calcular o valor com base no tempo decorrido
+    public double calcularValor(long tempo) {
+      double valorPorMinuto = 2.30;
+      return (tempo / 60000) * valorPorMinuto;
+    }
+
+    // O método run() para executar a ação da tarefa
+    public void run() {
+      // Obter o tempo atual em milissegundos
+      long agora = System.currentTimeMillis();
+      // Calcular o tempo decorrido desde o início da tarefa
+      long decorrido = agora - inicio;
+      // Se o tempo decorrido for menor que uma hora (3600000 milissegundos)
+      if (decorrido < 3600000) {
+        // Mostrar o número da ordem de serviço, o tempo decorrido e o valor
+        System.out.println("Ordem de serviço: " + numero);
+        System.out.println("Tempo decorrido: " + formatarTempo(decorrido));
+        System.out.println("Valor: R$ " + calcularValor(decorrido));
+        System.out.println();
       } else {
-        // Mostrar uma mensagem de que a ordem está na fila
-        alert("Ordem de serviço " + orderNumber + " adicionada na fila.");
+        // Se o tempo decorrido for maior ou igual a uma hora, cancelar a tarefa e mostrar a mensagem de finalizado
+        this.cancel();
+        System.out.println("Ordem de serviço: " + numero);
+        System.out.println("Finalizado!");
+        System.out.println();
       }
-      // Limpar o input
-      document.getElementById("order-number").value = "";
-    } else {
-      // Mostrar um alerta de erro se o input estiver vazio ou inválido
-      alert("Por favor, digite um número válido para a ordem de serviço.");
     }
   }
 
-  // Função para executar o contador de tempo para uma ordem específica
-  function runTimer(orderNumber) {
-    // Desabilitar o botão de iniciar
-    document.getElementById("start-button").disabled = true;
-    // Mostrar o número da ordem de serviço na tela
-    document.getElementById("order-display").innerHTML = "Ordem de serviço: " + orderNumber;
-    // Definir o tempo inicial em segundos (1 hora = 3600 segundos)
-    let time = 3600;
-    // Mostrar o tempo inicial na tela
-    document.getElementById("timer").innerHTML = formatTime(time);
-    // Criar um intervalo que executa a cada segundo
-    let interval = setInterval(function() {
-      // Decrementar o tempo em um segundo
-      time--;
-      // Mostrar o tempo atualizado na tela
-      document.getElementById("timer").innerHTML = formatTime(time);
-      // Verificar se o tempo acabou
-      if (time == 0) {
-        // Parar o intervalo
-        clearInterval(interval);
-        // Mostrar uma mensagem de fim de tempo na tela
-        document.getElementById("timer").innerHTML = "Fim do tempo!";
-        // Calcular o valor a ser cobrado pela ordem de serviço
-        let value = calculateValue(60); // 60 minutos
-        // Mostrar o valor na tela
-        document.getElementById("value-display").innerHTML = "Valor a ser cobrado: R$ " + value;
-        // Habilitar o botão de finalizar
-        document.getElementById("finish-button").disabled = false;
-        // Guardar a referência do intervalo e do número da ordem
-        document.getElementById("finish-button").interval = interval;
-        document.getElementById("finish-button").orderNumber = orderNumber;
+  // Um campo estático para armazenar o tempo de início da primeira tarefa
+  static long inicio;
+
+  public static void main(String[] args) throws IOException {
+    // Criar um objeto Timer
+    Timer timer = new Timer();
+    // Criar um objeto Scanner para ler a entrada do usuário
+    Scanner scanner = new Scanner(System.in);
+    // Criar uma variável para armazenar o número da ordem de serviço atual
+    int ordem = 1;
+    // Criar um loop infinito para solicitar ao usuário o número da ordem de serviço
+    while (true) {
+      // Solicitar ao usuário o número da ordem de serviço
+      System.out.print("Digite o número da ordem de serviço: ");
+      // Ler a entrada do usuário como um inteiro
+      int numero = scanner.nextInt();
+      // Se for a primeira ordem de serviço, obter o tempo atual em milissegundos e armazená-lo no campo inicio
+      if (ordem == 1) {
+        inicio = System.currentTimeMillis();
       }
-    }, 1000); // Executar a cada 1000 milissegundos (1 segundo)
-  }
-
-  // Função para finalizar a ordem de serviço atual
-  function finishOrder() {
-    // Parar o intervalo
-    let interval = document.getElementById("finish-button").interval;
-    clearInterval(interval);
-    // Pegar o número da ordem de serviço
-    let orderNumber = document.getElementById("finish-button").orderNumber;
-    // Remover a ordem de serviço da fila
-    let queue = document.getElementById("queue");
-    let li = document.getElementById("order-" + orderNumber);
-    queue.removeChild(li);
-    // Limpar a tela
-    document.getElementById("order-display").innerHTML = "";
-    document.getElementById("timer").innerHTML = "";
-    document.getElementById("value-display").innerHTML = "";
-    // Desabilitar o botão de finalizar
-    document.getElementById("finish-button").disabled = true;
-    // Verificar se a fila ainda tem ordens
-    if (queue.childElementCount > 0) {
-      // Pegar o número da próxima ordem de serviço
-      let nextOrderNumber = queue.firstElementChild.id.split("-")[1];
-      // Aguardar um minuto antes de iniciar a próxima ordem
-      setTimeout(function() {
-        runTimer(nextOrderNumber);
-      }, 60000); // 60000 milissegundos (1 minuto)
-    } else {
-      // Habilitar o botão de iniciar novamente
-      document.getElementById("start-button").disabled = false;
+      // Criar uma nova tarefa com o número da ordem de serviço
+      Tarefa tarefa = new Tarefa(numero);
+      // Agendar a tarefa para ser executada repetidamente com um período de um segundo (1000 milissegundos)
+      timer.schedule(tarefa, 0, 1000);
+      // Incrementar a variável ordem
+      ordem++;
+      // Se a variável ordem for maior que 10, sair do loop
+      if (ordem > 10) {
+        break;
+      }
+      // Solicitar ao usuário que clique em OK para iniciar a próxima ordem de serviço
+      System.out.print("Clique em OK para iniciar a próxima ordem de serviço.");
+      // Ler a entrada do usuário como uma string
+      String ok = scanner.next();
     }
+    // Fechar o objeto Scanner
+    scanner.close();
   }
-
-  // Função para verificar a senha antes de acessar a página
-  function checkPassword() {
-    // Pegar a senha do input
-    let password = document.getElementById("password").value;
-    // Definir a senha correta (pode ser alterada)
-    let correctPassword = "1234";
-    // Comparar as senhas e mostrar ou esconder os elementos da página
-    if (password == "1234") {
-      document.getElementById("password-section").style.display = "none";
-      document.getElementById("page-section").style.display = "block";
-    } else {
-      alert("Senha incorreta.");
-    }
-  }
-</script>
-</head>
-<body>
-<h1>Sistema de ordens de serviço</h1>
-</div>
-<div id="page-section" style="display: none;">
-<p>Insira o número da ordem de serviço e clique em iniciar.</p>
-<input type="number" id="order-number" />
-<button id="start-button" onclick="startTimer()">Iniciar</button>
-<button id="finish-button" onclick="finishOrder()" disabled>Finalizar</button>
-<p id="order-display"></p>
-<p id="timer"></p>
-<p id="value-display"></p>
-<ul id="queue"></ul>
-</div>
-</body>
-</html>
+}
