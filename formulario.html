@@ -1,91 +1,107 @@
 <!DOCTYPE html>
-import java.util.*;
-import java.io.*;
-
-public class Temporizador {
-
-  // Uma classe auxiliar que estende TimerTask para executar a ação da tarefa
-  static class Tarefa extends TimerTask {
-    // Um campo para armazenar o número da ordem de serviço
-    private int numero;
-
-    // Um construtor que recebe o número da ordem de serviço
-    public Tarefa(int numero) {
-      this.numero = numero;
+<html>
+<head>
+  <title>Temporizador</title>
+  <style>
+    /* Estilos CSS para o formulário e o temporizador */
+    form {
+      margin: 20px;
     }
 
-    // Um método para formatar o tempo em minutos e segundos
-    public String formatarTempo(long tempo) {
-      long minutos = tempo / 60000;
-      long segundos = (tempo % 60000) / 1000;
-      return String.format("%02d:%02d", minutos, segundos);
+    input {
+      font-size: 20px;
     }
 
-    // Um método para calcular o valor com base no tempo decorrido
-    public double calcularValor(long tempo) {
-      double valorPorMinuto = 2.30;
+    #temporizador {
+      margin: 20px;
+      font-size: 30px;
+    }
+
+    #valor {
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Um formulário HTML para pedir o número da ordem de serviço -->
+  <form id="formulario">
+    <label for="numero">Digite o número da ordem de serviço:</label>
+    <input type="number" id="numero" name="numero" min="1" max="10" required>
+    <input type="submit" value="Iniciar">
+  </form>
+  <!-- Um elemento HTML para mostrar o temporizador e o valor -->
+  <div id="temporizador"></div>
+  <div id="valor"></div>
+  <!-- Um script JavaScript para iniciar e mostrar o temporizador e o valor -->
+  <script>
+    // Obter os elementos HTML pelo ID
+    var formulario = document.getElementById("formulario");
+    var numero = document.getElementById("numero");
+    var temporizador = document.getElementById("temporizador");
+    var valor = document.getElementById("valor");
+
+    // Criar uma variável para armazenar o tempo de início da primeira ordem de serviço
+    var inicio;
+
+    // Criar uma variável para armazenar o número da ordem de serviço atual
+    var ordem = 1;
+
+    // Criar uma variável para armazenar o ID do intervalo do temporizador
+    var intervalo;
+
+    // Criar uma função para formatar o tempo em minutos e segundos
+    function formatarTempo(tempo) {
+      var minutos = Math.floor(tempo / 60000);
+      var segundos = Math.floor((tempo % 60000) / 1000);
+      return minutos + ":" + segundos;
+    }
+
+    // Criar uma função para calcular o valor com base no tempo decorrido
+    function calcularValor(tempo) {
+      var valorPorMinuto = 2.30;
       return (tempo / 60000) * valorPorMinuto;
     }
 
-    // O método run() para executar a ação da tarefa
-    public void run() {
+    // Criar uma função para atualizar o temporizador e o valor
+    function atualizarTemporizador() {
       // Obter o tempo atual em milissegundos
-      long agora = System.currentTimeMillis();
-      // Calcular o tempo decorrido desde o início da tarefa
-      long decorrido = agora - inicio;
+      var agora = Date.now();
+      // Calcular o tempo decorrido desde o início da ordem de serviço
+      var decorrido = agora - inicio;
       // Se o tempo decorrido for menor que uma hora (3600000 milissegundos)
       if (decorrido < 3600000) {
         // Mostrar o número da ordem de serviço, o tempo decorrido e o valor
-        System.out.println("Ordem de serviço: " + numero);
-        System.out.println("Tempo decorrido: " + formatarTempo(decorrido));
-        System.out.println("Valor: R$ " + calcularValor(decorrido));
-        System.out.println();
+        temporizador.innerHTML = "Ordem de serviço: " + numero.value + "<br>" +
+          "Tempo decorrido: " + formatarTempo(decorrido);
+        valor.innerHTML = "Valor: R$ " + calcularValor(decorrido).toFixed(2);
       } else {
-        // Se o tempo decorrido for maior ou igual a uma hora, cancelar a tarefa e mostrar a mensagem de finalizado
-        this.cancel();
-        System.out.println("Ordem de serviço: " + numero);
-        System.out.println("Finalizado!");
-        System.out.println();
+        // Se o tempo decorrido for maior ou igual a uma hora, limpar o intervalo do temporizador e mostrar a mensagem de finalizado
+        clearInterval(intervalo);
+        temporizador.innerHTML = "Ordem de serviço: " + numero.value + "<br>" +
+          "Finalizado!";
+        valor.innerHTML = "";
+        // Solicitar ao usuário que clique em OK para iniciar a próxima ordem de serviço
+        alert("Clique em OK para iniciar a próxima ordem de serviço.");
+        // Incrementar a variável ordem
+        ordem++;
+        // Se a variável ordem for maior que 10, desabilitar o formulário
+        if (ordem > 10) {
+          formulario.disabled = true;
+        }
       }
     }
-  }
 
-  // Um campo estático para armazenar o tempo de início da primeira tarefa
-  static long inicio;
-
-  public static void main(String[] args) throws IOException {
-    // Criar um objeto Timer
-    Timer timer = new Timer();
-    // Criar um objeto Scanner para ler a entrada do usuário
-    Scanner scanner = new Scanner(System.in);
-    // Criar uma variável para armazenar o número da ordem de serviço atual
-    int ordem = 1;
-    // Criar um loop infinito para solicitar ao usuário o número da ordem de serviço
-    while (true) {
-      // Solicitar ao usuário o número da ordem de serviço
-      System.out.print("Digite o número da ordem de serviço: ");
-      // Ler a entrada do usuário como um inteiro
-      int numero = scanner.nextInt();
-      // Se for a primeira ordem de serviço, obter o tempo atual em milissegundos e armazená-lo no campo inicio
+    // Adicionar um evento de envio ao formulário
+    formulario.addEventListener("submit", function(event) {
+      // Impedir o comportamento padrão do formulário
+      event.preventDefault();
+      // Se for a primeira ordem de serviço, obter o tempo atual em milissegundos e armazená-lo na variável inicio
       if (ordem == 1) {
-        inicio = System.currentTimeMillis();
+        inicio = Date.now();
       }
-      // Criar uma nova tarefa com o número da ordem de serviço
-      Tarefa tarefa = new Tarefa(numero);
-      // Agendar a tarefa para ser executada repetidamente com um período de um segundo (1000 milissegundos)
-      timer.schedule(tarefa, 0, 1000);
-      // Incrementar a variável ordem
-      ordem++;
-      // Se a variável ordem for maior que 10, sair do loop
-      if (ordem > 10) {
-        break;
-      }
-      // Solicitar ao usuário que clique em OK para iniciar a próxima ordem de serviço
-      System.out.print("Clique em OK para iniciar a próxima ordem de serviço.");
-      // Ler a entrada do usuário como uma string
-      String ok = scanner.next();
-    }
-    // Fechar o objeto Scanner
-    scanner.close();
-  }
-}
+      // Iniciar o intervalo do temporizador para chamar a função atualizarTemporizador a cada segundo (1000 milissegundos)
+      intervalo = setInterval(atualizarTemporizador, 1000);
+    });
+  </script>
+</body>
+</html>
