@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Temporizador</title>
+  <style>
+    /* Estilos CSS para o formulário, o temporizador e a lista */
+    form {
+      margin: 20px;
+    }
+
+    input {
+      font-size: 20px;
+    }
+
+    #temporizador {
+      margin: 20px;
+      font-size: 30px;
+    }
+
+    #valor {
+      font-size: 20px;
+    }
+
+    #lista {
+      margin: 20px;
+      font-size: 20px;
+    }
+
+    /* Estilo CSS para mudar a cor de fundo da página */
+    body {
+      background-color: lavenderblush;
+    }
+  </style>
+</head>
+<body>
+  <!-- Um formulário HTML para pedir o número da ordem de serviço -->
+  <form id="formulario">
+    <label for="numero">Digite o número da ordem de serviço:</label>
+    <input type="number" id="numero" name="numero" min="1" required>
+    <input type="submit" value="Iniciar">
+  </form>
+  <!-- Um elemento HTML para mostrar o temporizador e o valor -->
+  <div id="temporizador"></div>
+  <div id="valor"></div>
+  <!-- Um elemento HTML para mostrar a lista das ordens de serviço -->
+  <ul id="lista"></ul>
+  <!-- Um script JavaScript para iniciar e mostrar o temporizador, o valor e a lista -->
+  <script>
+    // Obter os elementos HTML pelo ID
+    var formulario = document.getElementById("formulario");
+    var numero = document.getElementById("numero");
+    var temporizador = document.getElementById("temporizador");
+    var valor = document.getElementById("valor");
+    var lista = document.getElementById("lista");
+
+    // Criar uma variável para armazenar o tempo de início da primeira ordem de serviço
+    var inicio;
+
+    // Criar uma variável para armazenar o ID do intervalo do temporizador
+    var intervalo;
+
+    // Criar uma variável booleana para armazenar se a ordem de serviço atual foi finalizada
+    var finalizado = true;
+
+    // Criar uma função para formatar o tempo em minutos e segundos
+    function formatarTempo(tempo) {
+      var minutos = Math.floor(tempo / 60000);
+      var segundos = Math.floor((tempo % 60000) / 1000);
+      return minutos + ":" + segundos;
+    }
+
+    // Criar uma função para calcular o valor com base no tempo decorrido
+    function calcularValor(tempo) {
+      var valorPorMinuto = 2.30;
+      return (tempo / 60000) * valorPorMinuto;
+    }
+
+    // Criar uma função para atualizar o temporizador e o valor
+    function atualizarTemporizador() {
+      // Obter o tempo atual em milissegundos
+      var agora = Date.now();
+      // Calcular o tempo decorrido desde o início da ordem de serviço
+      var decorrido = agora - inicio;
+      // Se o tempo decorrido for menor que uma hora (3600000 milissegundos)
+      if (decorrido < 3600000) {
+        // Mostrar o número da ordem de serviço, o tempo decorrido e o valor
+        temporizador.innerHTML = "Ordem de serviço: " + numero.value + "<br>" +
+          "Tempo decorrido: " + formatarTempo(decorrido);
+        valor.innerHTML = "Valor: R$ " + calcularValor(decorrido).toFixed(2);
+        // Definir a variável finalizado como false
+        finalizado = false;
+      } else {
+        // Se o tempo decorrido for maior ou igual a uma hora, limpar o intervalo do temporizador e mostrar a mensagem de finalizado
+        clearInterval(intervalo);
+        temporizador.innerHTML = "Ordem de serviço: " + numero.value + "<br>" +
+          "Finalizado!";
+        valor.innerHTML = "";
+        // Adicionar o número da ordem de serviço à lista
+        var item = document.createElement("li");
+        item.textContent = numero.value;
+        lista.appendChild(item);
+        // Solicitar ao usuário que clique em OK para iniciar a próxima ordem de serviço
+        alert("Clique em OK para iniciar a próxima ordem de serviço.");
+        // Definir a variável finalizado como true
+        finalizado = true;
+      }
+    }
+
+    // Adicionar um evento de envio ao formulário
+    formulario.addEventListener("submit", function(event) {
+      // Impedir o comportamento padrão do formulário
+      event.preventDefault();
+      // Verificar se a ordem de serviço atual foi finalizada
+      if (finalizado) {
+        // Se for a primeira ordem de serviço, obter o tempo atual em milissegundos e armazená-lo na variável inicio
+        if (!inicio) {
+          inicio = Date.now();
+        }
+        // Iniciar o intervalo do temporizador para chamar a função atualizarTemporizador a cada segundo (1000 milissegundos)
+        intervalo = setInterval(atualizarTemporizador, 1000);
+      } else {
+        // Se a ordem de serviço atual não foi finalizada, mostrar uma mensagem de erro
+        alert("Aguarde a ordem de serviço atual ser finalizada.");
+      }
+    });
+  </script>
+</body>
+</html>
