@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+
+  <!DOCTYPE html>
 <html>
 <head>
   <style>
@@ -6,12 +7,11 @@
       width: 100px;
     }
     button {
-      margin-left: 15px;
+      margin-left: 10px;
     }
     span {
       margin-left: 20px;
     }
-
     /* Estilo CSS para mudar a cor de fundo da página */
     body {
       background-color: #fcd7cb;
@@ -19,7 +19,7 @@
   </style>
 </head>
 <body>
-  <h1>Ordens de serviço                           DIGITAL TECH  Assistencia Tecnica Especializada</h1>
+   <h1>Ordens de serviço                           DIGITAL TECH  Assistencia Tecnica Especializada</h1>
   <div id="form">
     <input id="os1" type="text" placeholder="OS 1">
     <button id="btn1" onclick="startTimer(1)">Iniciar</button>
@@ -51,9 +51,9 @@
     }
 
     // Definir uma função para formatar o valor em reais
-   // function formatValor(valor) {
-   //   return valor.toFixed(2).replace(".", ",");
-   // }
+    function formatValor(valor) {
+      return valor.toFixed(2).replace(".", ",");
+    }
 
     // Definir uma função para iniciar o cronômetro e o contador de uma ordem de serviço
     function startTimer(n) {
